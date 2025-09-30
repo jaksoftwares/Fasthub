@@ -1,4 +1,4 @@
-import { api } from "lib/api";
+import { api } from "../api";
 
 export const ProductsAPI = {
   getAll: () => api.get("/products/"),

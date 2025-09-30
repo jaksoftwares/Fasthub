@@ -1,4 +1,4 @@
-import { api } from "lib/api";
+import { api } from "../api";
 
 export const SettingsAPI = {
   get: () => api.get("/settings/"),

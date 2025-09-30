@@ -32,7 +32,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       name: product.name,
       price: product.price,
       image: imageUrl,
-      category: product.category,
+      category: product.category ?? "",
     });
   };
 

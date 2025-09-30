@@ -1,0 +1,89 @@
+# Dependencies
+Frontend/node_modules/
+Frontend/npm-debug.log*
+Frontend/yarn-debug.log*
+Frontend/yarn-error.log*
+Frontend/pnpm-debug.log*
+Frontend/package-lock.json
+Frontend/yarn.lock
+Frontend/pnpm-lock.yaml
+
+# Production build
+Frontend/.next/
+Frontend/out/
+
+# Local env files
+Frontend/.env
+Frontend/.env.local
+Frontend/.env.development.local
+Frontend/.env.test.local
+Frontend/.env.production.local
+
+# Misc
+Frontend/.DS_Store
+Frontend/*.swp
+Frontend/*.swo
+Frontend/*.sw*
+
+# VSCode settings
+Frontend/.vscode/
+Frontend/*.code-workspace
+
+# Logs
+Frontend/logs
+Frontend/*.log
+
+
+# Python
+Backend/__pycache__/
+Backend/*.py[cod]
+Backend/*$py.class
+
+# Virtual environments
+Backend/venv/
+Backend/.venv/
+Backend/env/
+Backend/.env/
+Backend/ENV/
+
+# Distribution / packaging
+Backend/build/
+Backend/dist/
+Backend/*.egg-info/
+Backend/.eggs/
+
+# Logs
+Backend/*.log
+Backend/logs/
+Backend/*.out
+Backend/*.err
+
+# Unit test / coverage reports
+Backend/.pytest_cache/
+Backend/.tox/
+Backend/.coverage
+Backend/.coverage.*
+Backend/.cache
+Backend/coverage/
+Backend/htmlcov/
+
+# Environment variables
+Backend/.env
+Backend/.env.*
+Backend/.python-version
+
+# IDE / editor settings
+Backend/.vscode/
+Backend/.idea/
+
+# System files
+Backend/.DS_Store
+Backend/*.swp
+Backend/*.swo
+
+# Database (if using SQLite locally)
+Backend/*.db
+Backend/*.sqlite3
+
+# Uvicorn / Gunicorn reload artifacts
+Backend/*.pid

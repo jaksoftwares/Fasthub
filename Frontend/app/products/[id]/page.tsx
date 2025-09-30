@@ -16,6 +16,9 @@ import { toast } from 'sonner';
 
 const ProductDetailPage = () => {
   const params = useParams();
+
+  // Ensure params.id is always a string for API calls
+  const productId = Array.isArray(params.id) ? params.id[0] : params.id;
   const { addItem } = useCart();
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -28,7 +31,7 @@ const ProductDetailPage = () => {
       setLoading(true);
       setError(null);
       try {
-        const data = await ProductsAPI.get(params.id);
+        const data = await ProductsAPI.get(productId);
         setProduct(data);
       } catch (err: any) {
         setError(err?.message || 'Failed to fetch product');
@@ -36,8 +39,8 @@ const ProductDetailPage = () => {
         setLoading(false);
       }
     };
-    if (params.id) fetchProduct();
-  }, [params.id]);
+    if (productId) fetchProduct();
+  }, [productId]);
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -141,9 +144,9 @@ const ProductDetailPage = () => {
                   -{discountPercentage}% OFF
                 </Badge>
               )}
-              {product.tags.map((tag) => (
-                <Badge key={tag.id} className="absolute top-4 right-4" style={{ backgroundColor: tag.color }}>
-                  {tag.name}
+              {Array.isArray(product.tags) && product.tags.map((tag: any, idx: number) => (
+                <Badge key={tag.id ?? idx} className="absolute top-4 right-4" style={{ backgroundColor: tag.color }}>
+                  {tag.name ?? tag}
                 </Badge>
               ))}
             </div>
