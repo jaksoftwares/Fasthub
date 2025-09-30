@@ -1,0 +1,10 @@
+import { api } from "lib/api";
+
+export const ProductsAPI = {
+  getAll: () => api.get("/products/"),
+  get: (id: string | number) => api.get(`/products/${id}`),
+  search: (query: string) => api.get(`/products/search?query=${encodeURIComponent(query)}`),
+  create: (data: any) => api.post("/products/", data),
+  update: (id: string | number, data: any) => api.put(`/products/${id}`, data),
+  delete: (id: string | number) => api.delete(`/products/${id}`),
+};
