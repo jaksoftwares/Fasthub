@@ -321,9 +321,8 @@ const ProductDetailPage = () => {
                 <CardContent className="p-6">
                   <div className="prose max-w-none">
                     <p className="text-gray-700 leading-relaxed mb-6">{product.description}</p>
-                    
                     <h3 className="text-xl font-semibold mb-4">Key Features</h3>
-                    <ul className="space-y-2">
+                    <ul className="space-y-2 mb-4">
                       {features.map((feature: string, index: number) => (
                         <li key={index} className="flex items-start space-x-2">
                           <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
@@ -331,6 +330,21 @@ const ProductDetailPage = () => {
                         </li>
                       ))}
                     </ul>
+                    {/* Main product fields as key features */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex justify-between py-2 border-b border-gray-200"><span className="font-medium text-gray-700">Category</span><span className="text-gray-600">{product.category}</span></div>
+                      {product.sub_category && <div className="flex justify-between py-2 border-b border-gray-200"><span className="font-medium text-gray-700">Sub Category</span><span className="text-gray-600">{product.sub_category}</span></div>}
+                      {product.brand && <div className="flex justify-between py-2 border-b border-gray-200"><span className="font-medium text-gray-700">Brand</span><span className="text-gray-600">{product.brand}</span></div>}
+                      {product.model && <div className="flex justify-between py-2 border-b border-gray-200"><span className="font-medium text-gray-700">Model</span><span className="text-gray-600">{product.model}</span></div>}
+                      <div className="flex justify-between py-2 border-b border-gray-200"><span className="font-medium text-gray-700">SKU</span><span className="text-gray-600">{product.sku}</span></div>
+                      {product.warranty && <div className="flex justify-between py-2 border-b border-gray-200"><span className="font-medium text-gray-700">Warranty</span><span className="text-gray-600">{product.warranty}</span></div>}
+                      <div className="flex justify-between py-2 border-b border-gray-200"><span className="font-medium text-gray-700">Condition</span><span className="text-gray-600">{product.condition}</span></div>
+                      <div className="flex justify-between py-2 border-b border-gray-200"><span className="font-medium text-gray-700">Status</span><span className="text-gray-600">{product.status}</span></div>
+                      <div className="flex justify-between py-2 border-b border-gray-200"><span className="font-medium text-gray-700">Stock</span><span className="text-gray-600">{product.stock}</span></div>
+                      {product.color && <div className="flex justify-between py-2 border-b border-gray-200"><span className="font-medium text-gray-700">Color</span><span className="text-gray-600">{product.color}</span></div>}
+                      {product.weight && <div className="flex justify-between py-2 border-b border-gray-200"><span className="font-medium text-gray-700">Weight</span><span className="text-gray-600">{product.weight}</span></div>}
+                      {product.dimensions && <div className="flex justify-between py-2 border-b border-gray-200"><span className="font-medium text-gray-700">Dimensions</span><span className="text-gray-600">{product.dimensions}</span></div>}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

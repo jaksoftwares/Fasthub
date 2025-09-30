@@ -19,8 +19,16 @@ const CheckoutPage = () => {
   const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [orderData, setOrderData] = useState({
-    shipping: {},
-    payment: {},
+    shipping: {
+      name: '',
+      address: '',
+      city: '',
+      postalCode: '',
+      phone: '',
+    },
+    payment: {
+      method: '',
+    },
   });
 
   if (cartState.items.length === 0) {

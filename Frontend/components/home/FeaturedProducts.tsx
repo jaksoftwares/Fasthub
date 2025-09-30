@@ -84,22 +84,23 @@ const FeaturedProducts = () => {
             {featuredProducts.map((product) => (
               <Card key={product.id} className="group hover:shadow-lg transition-shadow duration-300">
                 <CardContent className="p-0">
-                  <div className="relative overflow-hidden rounded-t-lg">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      width={400}
-                      height={192}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <Badge className="absolute top-2 left-2 bg-orange-600">
-                      {product.badge}
-                    </Badge>
-                  </div>
-                  
+                  <Link href={`/products/${product.id}`} className="block">
+                    <div className="relative overflow-hidden rounded-t-lg cursor-pointer">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        width={400}
+                        height={192}
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <Badge className="absolute top-2 left-2 bg-orange-600">
+                        {product.badge}
+                      </Badge>
+                    </div>
+                  </Link>
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                      {product.name}
+                      <Link href={`/products/${product.id}`}>{product.name}</Link>
                     </h3>
                     
                     <div className="flex items-center mb-2">

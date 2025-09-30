@@ -75,7 +75,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({ filters, onFiltersChang
     onFiltersChange({
       category: '',
       priceRange: [0, 500000],
-      tag: '',
       brand: '',
       rating: 0,
       sortBy: 'name',
@@ -108,28 +107,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({ filters, onFiltersChang
         </CardContent>
       </Card>
 
-      {/* Product Tags */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Product Tags</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {productTags.map((tag) => (
-            <div key={tag.value} className="flex items-center space-x-2">
-              <Checkbox
-                id={`tag-${tag.value}`}
-                checked={filters.tag === tag.value}
-                onCheckedChange={(checked) => 
-                  handleFilterChange('tag', checked ? tag.value : '')
-                }
-              />
-              <Label htmlFor={`tag-${tag.value}`} className="text-sm">
-                {tag.label}
-              </Label>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+      {/* Product Tags (removed, not in Filters interface) */}
 
       {/* Category */}
       <Card>

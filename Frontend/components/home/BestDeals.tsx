@@ -88,25 +88,27 @@ const BestDeals = () => {
             {bestDeals.map((product) => (
               <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 border-2 border-orange-200">
                 <CardContent className="p-0">
-                  <div className="relative overflow-hidden rounded-t-lg">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      width={400}
-                      height={192}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <Badge className="absolute top-2 left-2 bg-red-600 text-white">
-                      -{product.discount}%
-                    </Badge>
-                    <div className="absolute top-2 right-2 bg-orange-600 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {product.timeLeft}
+                  <Link href={`/products/${product.id}`} className="block">
+                    <div className="relative overflow-hidden rounded-t-lg cursor-pointer">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        width={400}
+                        height={192}
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <Badge className="absolute top-2 left-2 bg-red-600 text-white">
+                        -{product.discount}%
+                      </Badge>
+                      <div className="absolute top-2 right-2 bg-orange-600 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {product.timeLeft}
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                      {product.name}
+                      <Link href={`/products/${product.id}`}>{product.name}</Link>
                     </h3>
                     <div className="flex items-center mb-2">
                       <div className="flex items-center">
