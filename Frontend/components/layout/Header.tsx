@@ -3,22 +3,27 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, ShoppingCart, User, Menu, X, Phone, Mail } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, Phone, Mail, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
+import WishlistDrawer from '@/components/wishlist/WishlistDrawer';
 import { useAuth } from '@/contexts/AuthContext';
 import CartDrawer from '@/components/cart/CartDrawer';
 import AuthModal from '@/components/auth/AuthModal';
+import { useAuthModal } from '@/contexts/AuthModalContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const { isOpen: isAuthOpen, open: openAuthModal, close: closeAuthModal } = useAuthModal();
   const [searchQuery, setSearchQuery] = useState('');
   
   const { state: cartState } = useCart();
+  const { state: wishlistState } = useWishlist();
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const { user, logout } = useAuth();
 
   const navigation = [
@@ -107,7 +112,7 @@ const Header = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setIsAuthOpen(true)}
+                    onClick={openAuthModal}
                     className="flex items-center space-x-1"
                   >
                     <User className="h-4 w-4" />
@@ -116,6 +121,17 @@ const Header = () => {
                 )}
               </div>
 
+              {/* Wishlist */}
+              <Button variant="ghost" size="sm" className="relative flex items-center space-x-1" onClick={() => setIsWishlistOpen(true)}>
+                <Heart className="h-5 w-5 text-pink-500" />
+                {wishlistState.items.length > 0 && (
+                  <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-pink-500 text-white">
+                    {wishlistState.items.length}
+                  </Badge>
+                )}
+                <span className="hidden md:block">Wishlist</span>
+              </Button>
+              <WishlistDrawer isOpen={isWishlistOpen} onClose={() => setIsWishlistOpen(false)} />
               {/* Cart */}
               <Button
                 variant="ghost"
@@ -190,7 +206,7 @@ const Header = () => {
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
       {/* Auth Modal */}
-      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+  <AuthModal isOpen={isAuthOpen} onClose={closeAuthModal} />
     </>
   );
 };

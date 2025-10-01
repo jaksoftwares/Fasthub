@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 
 interface ProductCardProps {
   product: {
     id: string;
+    slug: string;
     name: string;
     price: number;
     original_price?: number;
@@ -25,6 +27,7 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const imageUrl = Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : '/placeholder.png';
   const { addItem } = useCart();
+  const { state: wishlistState, addWishlistItem, removeWishlistItem } = useWishlist();
 
   const handleAddToCart = () => {
     addItem({
@@ -36,15 +39,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     });
   };
 
+  const isWishlisted = wishlistState.items.some(item => item.id === product.id);
   const handleWishlist = () => {
-    // Implement wishlist logic here
-    alert('Added to wishlist!');
+    if (isWishlisted) {
+      removeWishlistItem(product.id);
+    } else {
+      addWishlistItem({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: imageUrl,
+        category: product.category ?? "",
+      });
+    }
   };
 
   return (
     <Card className="group hover:shadow-lg transition-shadow duration-300">
       <CardContent className="p-0">
-        <Link href={`/products/${product.id}`}>
+        <Link href={`/products/${product.slug}`}>
           <div className="relative overflow-hidden rounded-t-lg cursor-pointer">
             <Image
               src={imageUrl}
@@ -62,7 +75,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </Link>
         <div className="p-4">
           <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-            <Link href={`/products/${product.id}`}>{product.name}</Link>
+            <Link href={`/products/${product.slug}`}>{product.name}</Link>
           </h3>
           <div className="flex items-center mb-2">
             <span className="font-bold text-orange-600 mr-2">Ksh{product.price.toLocaleString()}</span>
@@ -74,8 +87,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <Button size="sm" variant="outline" onClick={handleAddToCart}>
               <ShoppingCart className="h-4 w-4 mr-1" /> Add to Cart
             </Button>
-            <Button size="sm" variant="ghost" onClick={handleWishlist} aria-label="Add to Wishlist">
-              <Heart className="h-4 w-4 text-pink-500" />
+            <Button size="sm" variant={isWishlisted ? "default" : "ghost"} onClick={handleWishlist} aria-label="Add to Wishlist">
+              <Heart className={`h-4 w-4 ${isWishlisted ? 'text-white fill-pink-500' : 'text-pink-500'}`} />
+              {isWishlisted ? 'Wishlisted' : ''}
             </Button>
           </div>
         </div>

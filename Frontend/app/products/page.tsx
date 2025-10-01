@@ -35,6 +35,7 @@ const ProductsPage = () => {
         const mapped = Array.isArray(data)
           ? data.map((p) => ({
               ...p,
+              slug: p.slug || p.id, // fallback to id if slug missing
               image: Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : '/placeholder.png',
             }))
           : [];

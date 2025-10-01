@@ -28,6 +28,8 @@ class MpesaSTKRequest(BaseModel):
     phone_number: str = Field(..., pattern=r'^254\d{9}$')
     amount: float = Field(..., gt=0)
     order_id: int
+    account_reference: str = Field('Fasthub Computers', max_length=20)
+    transaction_desc: str = Field('Fasthub Computers', max_length=50)
 
 class MpesaCallback(BaseModel):
     MerchantRequestID: str

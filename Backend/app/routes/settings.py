@@ -35,14 +35,76 @@ def create_settings(settings: SettingsCreate, db: Session = Depends(get_db)):
     db.add(db_settings)
     db.commit()
     db.refresh(db_settings)
-    return db_settings
+    # Reconstruct nested objects for response (same as GET)
+    payment = {
+        "mpesa_enabled": db_settings.payment_mpesa_enabled,
+        "card_enabled": db_settings.payment_card_enabled,
+        "cod_enabled": db_settings.payment_cod_enabled,
+        "mpesa_shortcode": db_settings.payment_mpesa_shortcode,
+        "mpesa_passkey": db_settings.payment_mpesa_passkey,
+        "mpesa_consumer_key": db_settings.payment_mpesa_consumer_key,
+        "mpesa_consumer_secret": db_settings.payment_mpesa_consumer_secret,
+    }
+    shipping = {
+        "standard_fee": db_settings.shipping_standard_fee,
+        "express_fee": db_settings.shipping_express_fee,
+        "free_enabled": db_settings.shipping_free_enabled,
+        "same_day_enabled": db_settings.shipping_same_day_enabled,
+    }
+    notifications = {
+        "email_enabled": db_settings.notifications_email_enabled,
+        "sms_enabled": db_settings.notifications_sms_enabled,
+        "order_confirmations": db_settings.notifications_order_confirmations,
+        "low_stock_alerts": db_settings.notifications_low_stock_alerts,
+        "new_order_alerts": db_settings.notifications_new_order_alerts,
+    }
+    response = {
+        **db_settings.__dict__,
+        "payment": payment,
+        "shipping": shipping,
+        "notifications": notifications,
+    }
+    response.pop("_sa_instance_state", None)
+    return response
 
 @router.get("/", response_model=Settings)
 def get_settings(db: Session = Depends(get_db)):
     settings = db.query(SettingsModel).first()
     if not settings:
         raise HTTPException(status_code=404, detail="Settings not found")
-    return settings
+    # Reconstruct nested objects for response
+    payment = {
+        "mpesa_enabled": settings.payment_mpesa_enabled,
+        "card_enabled": settings.payment_card_enabled,
+        "cod_enabled": settings.payment_cod_enabled,
+        "mpesa_shortcode": settings.payment_mpesa_shortcode,
+        "mpesa_passkey": settings.payment_mpesa_passkey,
+        "mpesa_consumer_key": settings.payment_mpesa_consumer_key,
+        "mpesa_consumer_secret": settings.payment_mpesa_consumer_secret,
+    }
+    shipping = {
+        "standard_fee": settings.shipping_standard_fee,
+        "express_fee": settings.shipping_express_fee,
+        "free_enabled": settings.shipping_free_enabled,
+        "same_day_enabled": settings.shipping_same_day_enabled,
+    }
+    notifications = {
+        "email_enabled": settings.notifications_email_enabled,
+        "sms_enabled": settings.notifications_sms_enabled,
+        "order_confirmations": settings.notifications_order_confirmations,
+        "low_stock_alerts": settings.notifications_low_stock_alerts,
+        "new_order_alerts": settings.notifications_new_order_alerts,
+    }
+    # Build response dict
+    response = {
+        **settings.__dict__,
+        "payment": payment,
+        "shipping": shipping,
+        "notifications": notifications,
+    }
+    # Remove SQLAlchemy instance state
+    response.pop("_sa_instance_state", None)
+    return response
 
 @router.put("/", response_model=Settings)
 def update_settings(settings_update: SettingsUpdate, db: Session = Depends(get_db)):

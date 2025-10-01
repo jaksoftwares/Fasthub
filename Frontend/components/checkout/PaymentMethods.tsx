@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { PaymentsAPI } from '@/lib/api/payments';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -10,9 +11,12 @@ import { CreditCard, Smartphone, Banknote } from 'lucide-react';
 
 interface PaymentMethodsProps {
   onComplete: (data: any) => void;
+  amount?: number;
+  orderId?: number;
+  productName?: string;
 }
 
-const PaymentMethods: React.FC<PaymentMethodsProps> = ({ onComplete }) => {
+const PaymentMethods: React.FC<PaymentMethodsProps> = ({ onComplete, amount, orderId, productName }) => {
   const [selectedMethod, setSelectedMethod] = useState('mpesa');
   const [paymentData, setPaymentData] = useState({
     mpesaPhone: '',
@@ -21,6 +25,8 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ onComplete }) => {
     cvv: '',
     cardName: '',
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const paymentMethods = [
     {
@@ -46,14 +52,39 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ onComplete }) => {
     },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setError(null);
     let method = '';
     switch (selectedMethod) {
       case 'mpesa':
         method = `M-Pesa (${paymentData.mpesaPhone})`;
-        break;
+        setLoading(true);
+        try {
+          // Compose correct payload for backend
+          const payload = {
+            phone_number: paymentData.mpesaPhone,
+            amount: amount || 1, // fallback for demo
+            order_id: orderId || 1, // fallback for demo
+            account_reference: 'Fasthub Computers',
+            transaction_desc: productName ? `Payment for ${productName} on Fasthub Computers` : 'Fasthub Computers',
+          };
+          const res = await PaymentsAPI.mpesaStkPush(payload);
+          setLoading(false);
+          onComplete({ 
+            payment: {
+              method,
+              type: selectedMethod,
+              data: paymentData,
+              status: res?.data?.status || 'pending',
+              reference: res?.data?.reference || null,
+            }
+          });
+        } catch (err: any) {
+          setLoading(false);
+          setError(err?.response?.data?.detail || 'Failed to initiate M-Pesa payment.');
+        }
+        return;
       case 'card':
         method = `Card ending in ${paymentData.cardNumber.slice(-4)}`;
         break;
@@ -61,7 +92,6 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ onComplete }) => {
         method = 'Cash on Delivery';
         break;
     }
-    
     onComplete({ 
       payment: { 
         method,
@@ -85,6 +115,7 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ onComplete }) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {error && <div className="text-red-600 text-sm">{error}</div>}
           <RadioGroup value={selectedMethod} onValueChange={setSelectedMethod}>
             {paymentMethods.map((method) => {
               const IconComponent = method.icon;
@@ -198,8 +229,8 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ onComplete }) => {
             </div>
           )}
 
-          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-            Continue to Review
+          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={loading}>
+            {loading ? 'Processing...' : 'Continue to Review'}
           </Button>
         </form>
       </CardContent>

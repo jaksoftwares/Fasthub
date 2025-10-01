@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, Phone } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { ProductsAPI } from '@/lib/api/products';
+import { useWishlist } from '@/contexts/WishlistContext';
 import Image from 'next/image';
 import { toast } from 'sonner';
 
@@ -20,6 +21,7 @@ const ProductDetailPage = () => {
   // Ensure params.id is always a string for API calls
   const productId = Array.isArray(params.id) ? params.id[0] : params.id;
   const { addItem } = useCart();
+  const { state: wishlistState, addWishlistItem, removeWishlistItem } = useWishlist();
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState<any>(null);
@@ -87,9 +89,19 @@ const ProductDetailPage = () => {
   };
 
 
+  const isWishlisted = wishlistState.items.some((item) => item.id === product.id);
   const handleWishlist = () => {
-    // Implement wishlist logic here
-    alert('Added to wishlist!');
+    if (isWishlisted) {
+      removeWishlistItem(product.id);
+    } else {
+      addWishlistItem({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: images[0],
+        category: product.category ?? "",
+      });
+    }
   };
 
   const handleShare = async () => {
@@ -264,8 +276,14 @@ const ProductDetailPage = () => {
                   <ShoppingCart className="h-5 w-5 mr-2" />
                   Add to Cart
                 </Button>
-                <Button variant="outline" className="px-6" onClick={handleWishlist}>
-                  <Heart className="h-5 w-5" />
+                <Button
+                  variant={isWishlisted ? "default" : "outline"}
+                  className="px-6"
+                  onClick={handleWishlist}
+                  aria-label="Add to Wishlist"
+                >
+                  <Heart className={`h-5 w-5 ${isWishlisted ? 'text-white fill-pink-500' : 'text-pink-500'}`} />
+                  {isWishlisted ? 'Wishlisted' : ''}
                 </Button>
                 <Button variant="outline" className="px-6" onClick={handleShare}>
                   <Share2 className="h-5 w-5" />
@@ -413,10 +431,66 @@ const ProductDetailPage = () => {
             </TabsContent>
           </Tabs>
         </div>
+        {/* Related Products Section */}
+        <div className="mt-16">
+          <h2 className="text-2xl font-bold mb-6">Related Products</h2>
+          <RelatedProducts currentProduct={product} />
+        </div>
       </main>
-
       <Footer />
     </div>
+  );
+};
+
+// Related Products Component
+const RelatedProducts = ({ currentProduct }: { currentProduct: any }) => {
+  const [related, setRelated] = React.useState<any[]>([]);
+  React.useEffect(() => {
+    const fetchRelated = async () => {
+      try {
+        const all = await ProductsAPI.getAll();
+        setRelated(
+          all.filter((p: any) =>
+            p.id !== currentProduct.id &&
+            (p.category === currentProduct.category || p.brand === currentProduct.brand)
+          ).slice(0, 4)
+        );
+      } catch {}
+    };
+    fetchRelated();
+  }, [currentProduct]);
+  if (!related.length) return <div className="text-gray-500">No related products found.</div>;
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      {related.map((product) => (
+        <RelatedProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  );
+};
+
+const RelatedProductCard = ({ product }: { product: any }) => {
+  const imageUrl = Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : '/placeholder.png';
+  return (
+    <Card className="group hover:shadow-lg transition-shadow duration-300">
+      <CardContent className="p-0">
+        <a href={`/products/${product.id}`}>
+          <div className="relative overflow-hidden rounded-t-lg cursor-pointer">
+            <Image
+              src={imageUrl}
+              alt={product.name}
+              width={400}
+              height={192}
+              className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
+            <span className="font-bold text-orange-600">Ksh{product.price.toLocaleString()}</span>
+          </div>
+        </a>
+      </CardContent>
+    </Card>
   );
 };
 

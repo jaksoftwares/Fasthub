@@ -11,7 +11,16 @@ import { toast } from 'sonner';
 import { SettingsAPI } from '@/lib/api/settings';
 
 const SettingsPanel = () => {
-  const [storeSettings, setStoreSettings] = useState<any>({});
+  const [storeSettings, setStoreSettings] = useState<any>({
+    storeName: '',
+    storeDescription: '',
+    contactEmail: '',
+    contactPhone: '',
+    address: '',
+    currency: '',
+    taxRate: '',
+    freeShippingThreshold: '',
+  });
   const [paymentSettings, setPaymentSettings] = useState<any>({});
   const [shippingSettings, setShippingSettings] = useState<any>({});
   const [notificationSettings, setNotificationSettings] = useState<any>({});
@@ -24,7 +33,16 @@ const SettingsPanel = () => {
       setError(null);
       try {
         const data = await SettingsAPI.get();
-        setStoreSettings(data.store);
+        setStoreSettings({
+          storeName: data.storeName ?? '',
+          storeDescription: data.storeDescription ?? '',
+          contactEmail: data.contactEmail ?? '',
+          contactPhone: data.contactPhone ?? '',
+          address: data.address ?? '',
+          currency: data.currency ?? '',
+          taxRate: data.taxRate ?? '',
+          freeShippingThreshold: data.freeShippingThreshold ?? '',
+        });
         setPaymentSettings(data.payment);
         setShippingSettings(data.shipping);
         setNotificationSettings(data.notifications);
@@ -97,7 +115,7 @@ const SettingsPanel = () => {
                 <Label htmlFor="storeName">Store Name</Label>
                 <Input
                   id="storeName"
-                  value={storeSettings.storeName}
+                  value={storeSettings.storeName ?? ''}
                   onChange={(e) => setStoreSettings((prev: Record<string, any>) => ({ ...prev, storeName: e.target.value }))}
                 />
               </div>
@@ -105,7 +123,7 @@ const SettingsPanel = () => {
                 <Label htmlFor="currency">Currency</Label>
                 <Input
                   id="currency"
-                  value={storeSettings.currency}
+                  value={storeSettings.currency ?? ''}
                   onChange={(e) => setStoreSettings((prev: Record<string, any>) => ({ ...prev, currency: e.target.value }))}
                 />
               </div>
@@ -115,7 +133,7 @@ const SettingsPanel = () => {
               <Label htmlFor="storeDescription">Store Description</Label>
               <Input
                 id="storeDescription"
-                value={storeSettings.storeDescription}
+                value={storeSettings.storeDescription ?? ''}
                 onChange={(e) => setStoreSettings((prev: Record<string, any>) => ({ ...prev, storeDescription: e.target.value }))}
               />
             </div>
@@ -126,7 +144,7 @@ const SettingsPanel = () => {
                 <Input
                   id="contactEmail"
                   type="email"
-                  value={storeSettings.contactEmail}
+                  value={storeSettings.contactEmail ?? ''}
                   onChange={(e) => setStoreSettings((prev: Record<string, any>) => ({ ...prev, contactEmail: e.target.value }))}
                 />
               </div>
@@ -134,7 +152,7 @@ const SettingsPanel = () => {
                 <Label htmlFor="contactPhone">Contact Phone</Label>
                 <Input
                   id="contactPhone"
-                  value={storeSettings.contactPhone}
+                  value={storeSettings.contactPhone ?? ''}
                   onChange={(e) => setStoreSettings((prev: Record<string, any>) => ({ ...prev, contactPhone: e.target.value }))}
                 />
               </div>
@@ -144,7 +162,7 @@ const SettingsPanel = () => {
               <Label htmlFor="address">Address</Label>
               <Input
                 id="address"
-                value={storeSettings.address}
+                value={storeSettings.address ?? ''}
                 onChange={(e) => setStoreSettings((prev: Record<string, any>) => ({ ...prev, address: e.target.value }))}
               />
             </div>
@@ -155,7 +173,7 @@ const SettingsPanel = () => {
                 <Input
                   id="taxRate"
                   type="number"
-                  value={storeSettings.taxRate}
+                  value={storeSettings.taxRate ?? ''}
                   onChange={(e) => setStoreSettings((prev: Record<string, any>) => ({ ...prev, taxRate: e.target.value }))}
                 />
               </div>
@@ -164,7 +182,7 @@ const SettingsPanel = () => {
                 <Input
                   id="freeShippingThreshold"
                   type="number"
-                  value={storeSettings.freeShippingThreshold}
+                  value={storeSettings.freeShippingThreshold ?? ''}
                   onChange={(e) => setStoreSettings((prev: Record<string, any>) => ({ ...prev, freeShippingThreshold: e.target.value }))}
                 />
               </div>

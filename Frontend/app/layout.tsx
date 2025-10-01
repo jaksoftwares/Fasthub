@@ -4,6 +4,8 @@ import localFont from 'next/font/local';
 import { Toaster } from '@/components/ui/sonner';
 import { CartProvider } from '@/contexts/CartContext';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthModalProvider } from '@/contexts/AuthModalContext';
+import { WishlistProvider } from '@/contexts/WishlistContext';
 
 // 👇 Place the font files inside: app/fonts/
 const inter = localFont({
@@ -38,12 +40,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>
-          <CartProvider>
-            {children}
-            <Toaster />
-          </CartProvider>
-        </AuthProvider>
+        <AuthModalProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                {children}
+                <Toaster />
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
+        </AuthModalProvider>
       </body>
     </html>
   );

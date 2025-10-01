@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { AuthAPI } from '@/lib/api/auth';
 
 interface User {
   id: string;
@@ -18,7 +19,7 @@ const AuthContext = createContext<{
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (email: string, password: string, name: string) => Promise<boolean>;
+  register: (email: string, password: string, name: string, phone?: string) => Promise<boolean>;
   logout: () => void;
 } | null>(null);
 
@@ -40,43 +41,56 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      // Mock authentication - replace with real API call
-      const mockUser: User = {
-        id: '1',
-        email,
-        name: email.split('@')[0],
-        role: email.includes('admin') ? 'admin' : 'customer',
-      };
-      
-      setState({ user: mockUser, isLoading: false });
-      localStorage.setItem('fasthub-user', JSON.stringify(mockUser));
+      const data = await AuthAPI.login({ username: email, password });
+      localStorage.setItem('fasthub-token', data.access_token);
+      let user: User;
+      const adminEmails = [
+        'admin1@fasthub.com',
+        'admin2@fasthub.com'
+      ];
+      try {
+        const profile = await AuthAPI.getProfile(data.access_token);
+        user = {
+          id: profile.id || '',
+          email: profile.email || email,
+          name: profile.name || email.split('@')[0],
+          role: adminEmails.includes(profile.email || email) ? 'admin' : 'customer',
+        };
+      } catch (profileErr) {
+        // fallback if /auth/me is missing or fails
+        user = {
+          id: '',
+          email,
+          name: email.split('@')[0],
+          role: adminEmails.includes(email) ? 'admin' : 'customer',
+        };
+      }
+      setState({ user, isLoading: false });
+      localStorage.setItem('fasthub-user', JSON.stringify(user));
       return true;
     } catch (error) {
       return false;
     }
   };
 
-  const register = async (email: string, password: string, name: string): Promise<boolean> => {
+  const register = async (email: string, password: string, name: string, phone?: string): Promise<boolean> => {
     try {
-      // Mock registration - replace with real API call
-      const mockUser: User = {
-        id: Date.now().toString(),
-        email,
-        name,
-        role: 'customer',
-      };
-      
-      setState({ user: mockUser, isLoading: false });
-      localStorage.setItem('fasthub-user', JSON.stringify(mockUser));
-      return true;
+      await AuthAPI.register({ name, email, phone: phone || '', password });
+      // Optionally auto-login after registration
+      return await login(email, password);
     } catch (error) {
       return false;
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    const token = localStorage.getItem('fasthub-token');
+    if (token) {
+      try { await AuthAPI.logout(token); } catch {}
+    }
     setState({ user: null, isLoading: false });
     localStorage.removeItem('fasthub-user');
+    localStorage.removeItem('fasthub-token');
   };
 
   return (

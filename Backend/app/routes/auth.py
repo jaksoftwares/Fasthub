@@ -1,6 +1,6 @@
 
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.config import get_db
@@ -8,8 +8,29 @@ from app.schemas.customer import CustomerCreate, Customer
 from app.schemas.auth import Token
 from app.services.customer import CustomerService
 from app.utils.security import create_access_token, decode_access_token
+from app.models.customer import Customer as CustomerModel
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+# ---------------------------
+# Get current user profile
+# ---------------------------
+@router.get("/me", response_model=Customer)
+def get_me(Authorization: str = Header(...), db: Session = Depends(get_db)):
+    """
+    Return the current user's profile based on the JWT token in the Authorization header.
+    """
+    if not Authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid authorization header")
+    token = Authorization.split(" ", 1)[1]
+    email = decode_access_token(token)
+    if not email:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    customer = CustomerService.get_customer_by_email(db, email)
+    if not customer:
+        raise HTTPException(status_code=404, detail="User not found")
+    return customer
 
 # ---------------------------
 # Get all customers (admin)

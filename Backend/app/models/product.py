@@ -7,6 +7,7 @@ class Product(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False, index=True)
+    slug = Column(String(255), unique=True, index=True)
     description = Column(Text)
     category = Column(String(100), nullable=False, index=True)
     sub_category = Column(String(100))
@@ -41,4 +42,4 @@ class Product(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     def __repr__(self):
-        return f"<Product(id={self.id}, name='{self.name}', price={self.price})>"
+        return f"<Product(id={self.id}, name='{self.name}', slug='{self.slug}', price={self.price})>"

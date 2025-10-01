@@ -1,3 +1,4 @@
+    # Removed stray top-level get_product_by_slug definition
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.models.product import Product
@@ -5,17 +6,41 @@ from app.schemas.product import ProductCreate, ProductUpdate
 
 class ProductService:
     @staticmethod
+    def get_product_by_slug(db: Session, slug: str) -> Optional[Product]:
+        return db.query(Product).filter(Product.slug == slug).first()
+
+    @staticmethod
     def create_product(db: Session, product: ProductCreate) -> Product:
         # Check for duplicate SKU
         if product.sku:
             existing = ProductService.get_product_by_sku(db, product.sku)
             if existing:
                 raise Exception(f"A product with SKU '{product.sku}' already exists.")
-        db_product = Product(**product.model_dump())
+        # Ensure slug is present and unique, auto-generate if missing
+        slug = product.slug if getattr(product, 'slug', None) else ProductService.slugify(product.name)
+        # Ensure slug is unique
+        existing_slug = ProductService.get_product_by_slug(db, slug)
+        if existing_slug:
+            # If slug exists, append a number to make it unique
+            base_slug = slug
+            i = 2
+            while ProductService.get_product_by_slug(db, f"{base_slug}-{i}"):
+                i += 1
+            slug = f"{base_slug}-{i}"
+        db_product = Product(**{**product.model_dump(), 'slug': slug})
         db.add(db_product)
         db.commit()
         db.refresh(db_product)
         return db_product
+
+    @staticmethod
+    def slugify(name: str) -> str:
+        import re
+        slug = name.lower()
+        slug = re.sub(r'[^a-z0-9]+', '-', slug)
+        slug = re.sub(r'-+', '-', slug)
+        slug = slug.strip('-')
+        return slug
     
     @staticmethod
     def get_product(db: Session, product_id: int) -> Optional[Product]:

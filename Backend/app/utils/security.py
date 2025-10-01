@@ -29,6 +29,7 @@
 
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
+
 from app.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 def create_access_token(subject: str) -> str:

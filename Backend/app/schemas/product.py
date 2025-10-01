@@ -4,6 +4,7 @@ from datetime import datetime
 
 class ProductBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
+    slug: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = None
     category: str = Field(..., min_length=1, max_length=100)
     sub_category: Optional[str] = Field(None, max_length=100)
@@ -41,6 +42,7 @@ class ProductCreate(ProductBase):
 
 class ProductUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=255)
+    slug: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = None
     category: Optional[str] = Field(None, min_length=1, max_length=100)
     sub_category: Optional[str] = Field(None, max_length=100)

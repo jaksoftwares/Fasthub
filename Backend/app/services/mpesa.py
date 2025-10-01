@@ -41,7 +41,8 @@ class MpesaService:
     
     @staticmethod
     def initiate_stk_push(phone_number: str, amount: float, order_id: int, 
-                         callback_url: str) -> Dict[str, Any]:
+                         callback_url: str, account_reference: str = 'Fasthub Computers',
+                         transaction_desc: str = 'Fasthub Computers') -> Dict[str, Any]:
         """Initiate STK Push for M-Pesa payment"""
         access_token = MpesaService.get_access_token()
         if not access_token:
@@ -66,8 +67,8 @@ class MpesaService:
             "PartyB": settings.MPESA_SHORTCODE,
             "PhoneNumber": phone_number,
             "CallBackURL": callback_url,
-            "AccountReference": f"Order{order_id}",
-            "TransactionDesc": f"Payment for Order {order_id}"
+            "AccountReference": account_reference[:20],
+            "TransactionDesc": transaction_desc[:50]
         }
         
         try:

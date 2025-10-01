@@ -13,11 +13,21 @@ def create_seed_data():
     db = SessionLocal()
     
     try:
-        # Check if data already exists
+        # Always ensure admin users exist
+        admin_users = [
+            dict(name="Admin One", email="admin1@fasthub.com", phone="+254700000001", password="adminpass1"),
+            dict(name="Admin Two", email="admin2@fasthub.com", phone="+254700000002", password="adminpass2"),
+        ]
+        for admin in admin_users:
+            if not CustomerService.get_customer_by_email(db, admin["email"]):
+                CustomerService.create_customer(db, CustomerCreate(**admin))
+
+        # Only create demo data if not already present
         if db.query(Product).first() or db.query(Customer).first():
-            print("Seed data already exists, skipping...")
+            print("Seed data already exists, ensured admins present.")
+            db.commit()
             return
-        
+
         # Create sample products
         products_data = [
             {
@@ -77,6 +87,15 @@ def create_seed_data():
         ]
         
         for product_data in products_data:
+            # Auto-generate slug if not present
+            if 'slug' not in product_data or not product_data['slug']:
+                import re
+                name = product_data['name']
+                slug = name.lower()
+                slug = re.sub(r'[^a-z0-9]+', '-', slug)
+                slug = re.sub(r'-+', '-', slug)
+                slug = slug.strip('-')
+                product_data['slug'] = slug
             product = Product(**product_data)
             db.add(product)
         
@@ -88,8 +107,24 @@ def create_seed_data():
             password="pass123"  # Short password to ensure bcrypt compatibility
         )
         customer = CustomerService.create_customer(db, customer_data)
-        
-        # Commit products and customer
+
+        # Add two admin users
+        admin1 = CustomerCreate(
+            name="Admin One",
+            email="admin1@fasthub.com",
+            phone="+254700000001",
+            password="adminpass1"
+        )
+        admin2 = CustomerCreate(
+            name="Admin Two",
+            email="admin2@fasthub.com",
+            phone="+254700000002",
+            password="adminpass2"
+        )
+        CustomerService.create_customer(db, admin1)
+        CustomerService.create_customer(db, admin2)
+
+        # Commit products and customers
         db.commit()
         
         # Create sample order

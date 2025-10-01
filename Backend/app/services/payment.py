@@ -60,7 +60,9 @@ class PaymentService:
     
     @staticmethod
     def initiate_mpesa_payment(db: Session, phone_number: str, amount: float, 
-                              order_id: int, callback_url: str) -> dict:
+                              order_id: int, callback_url: str,
+                              account_reference: str = 'Fasthub Computers',
+                              transaction_desc: str = 'Fasthub Computers') -> dict:
         # Create payment record
         payment_data = PaymentCreate(
             order_id=order_id,
@@ -78,7 +80,9 @@ class PaymentService:
             phone_number=phone_number,
             amount=amount,
             order_id=order_id,
-            callback_url=callback_url
+            callback_url=callback_url,
+            account_reference=account_reference,
+            transaction_desc=transaction_desc
         )
         
         if mpesa_result["success"]:

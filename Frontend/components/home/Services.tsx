@@ -85,16 +85,16 @@ const Services = () => {
             Need Professional IT Support?
           </h3>
           <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-            Our certified technicians are ready to help with all your IT needs. From simple repairs to complex system upgrades, we've got you covered.
+            Our certified technicians are ready to help with all your IT needs. From simple repairs to complex system upgrades, we&apos;ve got you covered.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/repairs">
-              <Button size="lg" className="bg-white text-blue-900 hover:bg-gray-100">
+              <Button size="lg" className="bg-orange-400 text-blue-900 hover:bg-gray-100">
                 Book a Repair
               </Button>
             </Link>
             <Link href="/contact">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-900">
+              <Button size="lg" variant="outline" className="border-white text-blue-900 hover:bg-orange-400 hover:text-blue-900">
                 Get Quote
               </Button>
             </Link>

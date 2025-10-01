@@ -46,18 +46,20 @@ def update_payment(payment_id: int, payment_update: PaymentUpdate, db: Session =
 @router.post("/mpesa/stk-push")
 def initiate_mpesa_payment(request: MpesaSTKRequest, db: Session = Depends(get_db)):
     callback_url = "https://your-domain.com/payments/mpesa/callback"  # This should be configurable
-    
+
     result = PaymentService.initiate_mpesa_payment(
         db=db,
         phone_number=request.phone_number,
         amount=request.amount,
         order_id=request.order_id,
-        callback_url=callback_url
+        callback_url=callback_url,
+        account_reference=request.account_reference,
+        transaction_desc=request.transaction_desc
     )
-    
+
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result["message"])
-    
+
     return result
 
 @router.post("/mpesa/callback")
