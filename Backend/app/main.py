@@ -8,16 +8,13 @@ from app.routes import (
     products_router, customers_router, orders_router, 
     payments_router, repairs_router, analytics_router, settings_router
 )
+from app.routes import auth  # <-- added
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create database tables
     Base.metadata.create_all(bind=engine)
-    
-    # Create seed data
     from app.seed import create_seed_data
     create_seed_data()
-    
     yield
 
 app = FastAPI(
@@ -27,7 +24,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -36,7 +32,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include all routers
+# Routers
 app.include_router(products_router)
 app.include_router(customers_router)
 app.include_router(orders_router)
@@ -44,7 +40,7 @@ app.include_router(payments_router)
 app.include_router(repairs_router)
 app.include_router(analytics_router)
 app.include_router(settings_router)
-
+app.include_router(auth.router)  
 @app.get("/")
 async def root():
     return {"message": "E-Commerce API is running"}
